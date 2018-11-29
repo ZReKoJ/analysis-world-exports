@@ -182,13 +182,14 @@ def main(yearStart, yearEnd, countryStart, countryEnd, mode):
 # python web-scraping.py country=[country] year=[year] exports                                              #
 # python web-scraping.py country=[countryStart,countryEnd]                                                  #
 # python web-scraping.py year=[yearStart,yearEnd] imports                                                   #
-# python web-scraping.py product=[Animal] imports                                                   #
+# python web-scraping.py product=[Animal] imports                                                           #
 #                                                                                                           #
 # args could be in any order                                                                                #
 # between brackets [] must not have any empty space                                                         #
 # what you have to set between brackets [] is a range, but also one value meaning range of length 1         #
 # default values for those args are shown below so if you do not provide those args they are set by default #
 # make sure that country names are identical to what is shown in the page to scripe                         #
+# in product options names with spaces has to be between ""                                                 #
 #############################################################################################################
 
 yearStart = 1950

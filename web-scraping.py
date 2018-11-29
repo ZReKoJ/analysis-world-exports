@@ -124,7 +124,10 @@ def main(yearStart, yearEnd, countryStart, countryEnd, mode):
     for year in range(yearStart, yearEnd + 1):
         print("Scanning year", year, mode.lower(), "...")
 
-        edges = open(str(year) + "-" + mode.lower() + ".csv", "w")
+        title = str(year) + "-" + mode.lower()
+        if len(product) > 0:
+            title = title + "-" + "-".join(product)
+        edges = open(title + ".csv", "w")
         edges.write(delimiter.join(edge_title) + "\n")
 
         # loop range country
@@ -137,30 +140,32 @@ def main(yearStart, yearEnd, countryStart, countryEnd, mode):
 
                 # loop products
                 for productKey, productValue in productsHref.items():
-                    print("Scanning year", year, countryKey, productKey, mode.lower(), "...")
 
-                    soup = getPage(productValue.replace("LTST", str(year)))
-                    arrayResult = webScrapingGetData(soup)
-                    if arrayResult is not None:
-                        for result in arrayResult:
-                            if result["partner-name"] not in countryDict:
-                                countryDict[result["partner-name"]] = len(countryDict) + 1
-                                nodes = open("nodes.csv", "a")
-                                nodes.write(str(len(countryDict)) + delimiter + str(result["partner-name"]) + "\n")
-                                nodes.close()
+                    if productKey in product:
+                        print("Scanning year", year, countryKey, productKey, mode.lower(), "...")
 
-                            written = []
-                            written.append(str(countryDict[countryKey]))
-                            written.append(str(countryDict[result["partner-name"]]))
-                            written.append("Directed")
-                            written.append(str(productKey))
-                            written.append(str(year))
-                            written.append(str(result["export-thousand-dolar"]))
-                            written.append(str(result["export-product-share-percentage"]))
-                            written.append(str(result["revealed-comparative-advantage"]))
-                            written.append(str(result["world-growth"]))
-                            written.append(str(result["country-growth"]))
-                            edges.write(delimiter.join(written) + "\n")
+                        soup = getPage(productValue.replace("LTST", str(year)))
+                        arrayResult = webScrapingGetData(soup)
+                        if arrayResult is not None:
+                            for result in arrayResult:
+                                if result["partner-name"] not in countryDict:
+                                    countryDict[result["partner-name"]] = len(countryDict) + 1
+                                    nodes = open("nodes.csv", "a")
+                                    nodes.write(str(len(countryDict)) + delimiter + str(result["partner-name"]) + "\n")
+                                    nodes.close()
+
+                                written = []
+                                written.append(str(countryDict[countryKey]))
+                                written.append(str(countryDict[result["partner-name"]]))
+                                written.append("Directed")
+                                written.append(str(productKey))
+                                written.append(str(year))
+                                written.append(str(result["export-thousand-dolar"]))
+                                written.append(str(result["export-product-share-percentage"]))
+                                written.append(str(result["revealed-comparative-advantage"]))
+                                written.append(str(result["world-growth"]))
+                                written.append(str(result["country-growth"]))
+                                edges.write(delimiter.join(written) + "\n")
                 
         edges.close()
 
@@ -177,6 +182,7 @@ def main(yearStart, yearEnd, countryStart, countryEnd, mode):
 # python web-scraping.py country=[country] year=[year] exports                                              #
 # python web-scraping.py country=[countryStart,countryEnd]                                                  #
 # python web-scraping.py year=[yearStart,yearEnd] imports                                                   #
+# python web-scraping.py product=[Animal] imports                                                   #
 #                                                                                                           #
 # args could be in any order                                                                                #
 # between brackets [] must not have any empty space                                                         #
@@ -190,6 +196,7 @@ yearEnd = 2020
 countryStart = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 countryEnd = "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
 mode = "Exports"
+product = []
 
 # Managing args
 if len(sys.argv) > 1:
@@ -211,6 +218,8 @@ if len(sys.argv) > 1:
                 yearEnd = yearStart
             else:
                 yearEnd = int(tags[1][1])
+        if str(tags[0]).lower() == "product":
+            product = tags[1]
         if str(tags[0]).lower() == "exports":
             mode = "Exports"
         if str(tags[0]).lower() == "imports":

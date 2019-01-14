@@ -7,9 +7,10 @@ COUNTRIES_TO_CLEAN = sys.argv[1:]
 EXPORTS_TO_CLEAN = []
 
 for i in COUNTRIES_TO_CLEAN:
-    select = (df1.loc[df1['Label'] == i, 'Id']).get_values()[0]
-    EXPORTS_TO_CLEAN.append(select)
-    df1 = df1.loc[df1['Label'] != i]
+    select = (df1.loc[df1['Label'] == i, 'Id']).get_values()
+    if len(select) > 0:
+        EXPORTS_TO_CLEAN.append(select[0])
+        df1 = df1.loc[df1['Label'] != i]
 
 dirs = os.listdir('edges')
 

@@ -1,33 +1,30 @@
 import pandas as pd
 import os, sys
 
-df1 = pd.read_csv('nodes.csv',sep=';')
+nodes_csv = pd.read_csv('nodes.csv',sep=';')
 
-COUNTRIES_TO_CLEAN = sys.argv[1:]
-EXPORTS_TO_CLEAN = []
+countries_to_clean = sys.argv[1:]
+exports_to_clean = []
 
-for i in COUNTRIES_TO_CLEAN:
-    select = (df1.loc[df1['Label'] == i, 'Id']).get_values()
+for country in countries_to_clean:
+    select = (nodes_csv.loc[nodes_csv['Label'] == country, 'Id']).get_values()
     if len(select) > 0:
-        EXPORTS_TO_CLEAN.append(select[0])
-        df1 = df1.loc[df1['Label'] != i]
+        exports_to_clean.append(select[0])
+        nodes_csv = nodes_csv.loc[nodes_csv['Label'] != country]
 
 dirs = os.listdir('edges')
 
-print(EXPORTS_TO_CLEAN)
-print(dirs)
-# This would print all the files and directories
 columns = ['export-product-share-percentage','revealed-comparative-advantage','world-growth','country-growth']
 for file in dirs:
     if file != '.DS_Store':
-        df2 = pd.read_csv('./edges/'+file,sep=';')
-        df2 = df2.drop(columns, axis=1)
-        df2 = df2.rename(index=str, columns={"export-thousand-dolar": "Weight"})
-        for i in EXPORTS_TO_CLEAN:
-            df2 = df2.loc[df2['Source'] != i]
-            df2 = df2.loc[df2['Target'] != i]
-            df2 = df2.loc[df2['Weight'] > 0]
+        edges_csv = pd.read_csv('./edges/'+file,sep=';')
+        edges_csv = edges_csv.drop(columns, axis=1)
+        edges_csv = edges_csv.rename(index=str, columns={"export-thousand-dolar": "Weight"})
+        for i in exports_to_clean:
+            edges_csv = edges_csv.loc[edges_csv['Source'] != i]
+            edges_csv = edges_csv.loc[edges_csv['Target'] != i]
+            edges_csv = edges_csv.loc[edges_csv['Weight'] > 0]
 
-        df2.to_csv('edges_clean/'+file, sep=';', encoding='utf-8', index=False)
+        edges_csv.to_csv('edges_clean/'+file, sep=';', encoding='utf-8', index=False)
 
-df1.to_csv('nodes_clean.csv', sep=';', encoding='utf-8', index=False)
+nodes_csv.to_csv('nodes_clean.csv', sep=';', encoding='utf-8', index=False)

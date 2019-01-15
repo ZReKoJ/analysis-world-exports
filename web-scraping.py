@@ -56,12 +56,7 @@ def webScrapingGetData(soup):
     # Getting all useful data i donno why those data are stored in javascript instead of html
     parsedData = re.findall(r'var +col[0-5] += +(\["[^\]]+"\]);', str(data))
     if len(parsedData) == 6:
-        parsedData[0] = json.loads(parsedData[0])
-        parsedData[1] = json.loads(parsedData[1])
-        parsedData[2] = json.loads(parsedData[2])
-        parsedData[3] = json.loads(parsedData[3])
-        parsedData[4] = json.loads(parsedData[4])
-        parsedData[5] = json.loads(parsedData[5])
+        parsedData = list(map(lambda stringData : json.loads(stringData), parsedData))
         arrayResult = []
         for i in range(len(parsedData[0])):
             result = {

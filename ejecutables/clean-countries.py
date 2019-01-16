@@ -31,7 +31,11 @@ for file in dirs:
     if file != '.DS_Store':
         edges_csv = pd.read_csv('./edges/' + file, sep=';')
         # Quitamos las columnas que no vamos a utilizar
-        edges_csv = edges_csv.drop(columns, axis=1)
+        
+        for column in columns:
+            if column in edges_csv:
+                    edges_csv = edges_csv.drop(column, axis=1)
+        
         # Cambiamos export-thousand-dolar por Weight
         edges_csv = edges_csv.rename(
                                      index=str,
